@@ -2,20 +2,20 @@ if getgenv().Library then
 	getgenv().Library:Unload()
 end
 
-if not isfolder("eclipse") then
-	makefolder("eclipse")
+if not isfolder("xeioa") then
+	makefolder("xeioa")
 end
 
-if not isfolder("eclipse/Assets") then
-	makefolder("eclipse/Assets")
+if not isfolder("xeioa/Assets") then
+	makefolder("xeioa/Assets")
 end
 
-if not isfolder("eclipse/Configs") then
-	makefolder("eclipse/Configs")
+if not isfolder("xeioa/Configs") then
+	makefolder("xeioa/Configs")
 end
 
-if not isfolder("eclipse/Themes") then
-	makefolder("eclipse/Themes")
+if not isfolder("xeioa/Themes") then
+	makefolder("xeioa/Themes")
 end
 
 local Library do
@@ -101,10 +101,10 @@ local Library do
 		},
 
 		Folders = {
-			Directory = "eclipse",
-			Configs = "eclipse/Configs",
-			Assets = "eclipse/Assets",
-			Themes = "eclipse/Themes"
+			Directory = "xeioa",
+			Configs = "xeioa/Configs",
+			Assets = "xeioa/Assets",
+			Themes = "xeioa/Themes"
 		},
 
 		Images = {
@@ -2510,6 +2510,871 @@ local Library do
 			return Dropdown, Items 
 		end
 
+
+Components.MultiDropdown = function(Data)
+local Dropdown = {
+Value = { },
+Flag = Data.Flag,
+IsOpen = false,
+Disabled = false,
+OnChanged = nil,
+Options = { }
+}
+
+local Items = { } do
+Items["Dropdown"] = Instances:Create("Frame", {
+Parent = Data.Parent.Instance,
+Name = "\0",
+BackgroundTransparency = 1,
+Size = UDim2New(1, 0, 0, 25),
+BorderColor3 = FromRGB(0, 0, 0),
+ZIndex = 2,
+BorderSizePixel = 0,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})
+
+Items["Text"] = Instances:Create("TextLabel", {
+Parent = Items["Dropdown"].Instance,
+Name = "\0",
+FontFace = Library.Font,
+TextColor3 = FromRGB(255, 255, 255),
+BorderColor3 = FromRGB(0, 0, 0),
+Text = Data.Name,
+AutomaticSize = Enum.AutomaticSize.X,
+AnchorPoint = Vector2New(0, 0.5),
+Size = UDim2New(0, 0, 0, 15),
+BackgroundTransparency = 1,
+Position = UDim2New(0, 0, 0.5, 0),
+BorderSizePixel = 0,
+ZIndex = 2,
+TextSize = 14,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})  Items["Text"]:AddToTheme({TextColor3 = "Text"})
+
+Items["RealDropdown"] = Instances:Create("TextButton", {
+Parent = Items["Dropdown"].Instance,
+Text = "",
+AutoButtonColor = false,
+Name = "\0",
+BorderColor3 = FromRGB(0, 0, 0),
+AnchorPoint = Vector2New(1, 0),
+Position = UDim2New(1, 0, 0, 0),
+Size = UDim2New(0, not IsMobile and 135 or 75, 0, 25),
+ZIndex = 2,
+BorderSizePixel = 0,
+BackgroundColor3 = FromRGB(36, 32, 39)
+})  Items["RealDropdown"]:AddToTheme({BackgroundColor3 = "Element"})
+
+Instances:Create("UICorner", {
+Parent = Items["RealDropdown"].Instance,
+Name = "\0",
+CornerRadius = UDimNew(0, 5)
+})
+
+Instances:Create("UIGradient", {
+Parent = Items["RealDropdown"].Instance,
+Name = "\0",
+Rotation = 90,
+Color = RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, FromRGB(216, 216, 216))}
+}):AddToTheme({Color = function()
+return RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, Library.Theme["Gradient"])}
+end})
+
+Items["Value"] = Instances:Create("TextLabel", {
+Parent = Items["RealDropdown"].Instance,
+Name = "\0",
+FontFace = Library.Font,
+TextColor3 = FromRGB(255, 255, 255),
+BorderColor3 = FromRGB(0, 0, 0),
+Text = "--",
+TextTruncate = Enum.TextTruncate.AtEnd,
+Size = UDim2New(1, -25, 0, 15),
+AnchorPoint = Vector2New(0, 0.5),
+Position = UDim2New(0, 8, 0.5, 0),
+BackgroundTransparency = 1,
+TextXAlignment = Enum.TextXAlignment.Left,
+BorderSizePixel = 0,
+ZIndex = 2,
+TextSize = 14,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})  Items["Value"]:AddToTheme({TextColor3 = "Text"})
+
+Items["Icon"] = Instances:Create("ImageLabel", {
+Parent = Items["RealDropdown"].Instance,
+Name = "\0",
+ImageColor3 = FromRGB(232, 186, 248),
+ScaleType = Enum.ScaleType.Fit,
+BorderColor3 = FromRGB(0, 0, 0),
+Size = UDim2New(0, 25, 0, 25),
+AnchorPoint = Vector2New(1, 0.5),
+Image = "rbxassetid://96215562143920",
+BackgroundTransparency = 1,
+Position = UDim2New(1, -1, 0.5, 0),
+ZIndex = 2,
+BorderSizePixel = 0,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})  Items["Icon"]:AddToTheme({ImageColor3 = "Accent"})
+
+Items["OptionHolder"] = Instances:Create("ScrollingFrame", {
+Parent = Library.Holder.Instance,
+Name = "\0",
+Visible = false,
+Active = true,
+AutomaticCanvasSize = Enum.AutomaticSize.Y,
+AnchorPoint = Vector2New(0, 0),
+ZIndex = 12,
+BorderSizePixel = 0,
+CanvasSize = UDim2New(0, 0, 0, 0),
+ScrollBarImageColor3 = FromRGB(232, 186, 248),
+MidImage = "rbxassetid://128693616966482",
+BorderColor3 = FromRGB(0, 0, 0),
+ScrollBarThickness = 1,
+TopImage = "rbxassetid://128693616966482",
+Size = UDim2New(0, 135, 0, 125),
+BottomImage = "rbxassetid://128693616966482",
+Position = UDim2New(0, Items["RealDropdown"].Instance.AbsolutePosition.X, 0, Items["RealDropdown"].Instance.AbsolutePosition.Y + 30),
+BackgroundColor3 = FromRGB(15, 12, 16)
+})  Items["OptionHolder"]:AddToTheme({ScrollBarImageColor3 = "Accent", BackgroundColor3 = "Background"})
+
+Instances:Create("UICorner", {
+Parent = Items["OptionHolder"].Instance,
+Name = "\0",
+CornerRadius = UDimNew(0, 5)
+})
+
+Instances:Create("UIPadding", {
+Parent = Items["OptionHolder"].Instance,
+Name = "\0",
+PaddingTop = UDimNew(0, 5),
+PaddingBottom = UDimNew(0, 8),
+PaddingRight = UDimNew(0, 5),
+PaddingLeft = UDimNew(0, 5)
+})
+
+Instances:Create("UIListLayout", {
+Parent = Items["OptionHolder"].Instance,
+Name = "\0",
+Padding = UDimNew(0, 5),
+SortOrder = Enum.SortOrder.LayoutOrder
+})
+end
+
+function Dropdown:Set(Option)
+if type(Option) ~= "table" then return end
+self.Value = Option
+Library.Flags[self.Flag] = Option
+for _, Value in self.Options do
+Value.Selected = TableFind(Option, Value.Name) ~= nil
+Value:Toggle(Value.Selected and "Active" or "Inactive")
+end
+local TextToDisplay = #self.Value == 0 and "--" or TableConcat(self.Value, ", ")
+Items["Value"].Instance.Text = TextToDisplay
+if Data.Callback then Library:SafeCall(Data.Callback, self.Value) end
+if self.OnChanged then self.OnChanged(self.Value) end
+end
+
+function Dropdown:Get()
+return self.Value
+end
+
+function Dropdown:Add(Option)
+local OptionButton = Instances:Create("TextButton", {
+Parent = Items["OptionHolder"].Instance,
+Name = "\0",
+FontFace = Library.Font,
+TextColor3 = FromRGB(0, 0, 0),
+BorderColor3 = FromRGB(0, 0, 0),
+Text = "",
+AutoButtonColor = false,
+BackgroundTransparency = 1,
+BorderSizePixel = 0,
+Size = UDim2New(1, 0, 0, 25),
+ZIndex = 2,
+TextSize = 14,
+BackgroundColor3 = FromRGB(22, 20, 24)
+})  OptionButton:AddToTheme({BackgroundColor3 = "Inline"})
+
+Instances:Create("UICorner", {
+Parent = OptionButton.Instance,
+Name = "\0",
+CornerRadius = UDimNew(0, 5)
+})
+
+local CheckBox = Instances:Create("Frame", {
+Parent = OptionButton.Instance,
+Name = "\0",
+BorderColor3 = FromRGB(0, 0, 0),
+BorderSizePixel = 0,
+Size = UDim2New(0, 12, 0, 12),
+AnchorPoint = Vector2New(0, 0.5),
+Position = UDim2New(0, 7, 0.5, 0),
+ZIndex = 3,
+BackgroundColor3 = FromRGB(36, 32, 39)
+})  CheckBox:AddToTheme({BackgroundColor3 = "Element"})
+
+Instances:Create("UICorner", {
+Parent = CheckBox.Instance,
+Name = "\0",
+CornerRadius = UDimNew(0, 3)
+})
+
+Instances:Create("UIStroke", {
+Parent = CheckBox.Instance,
+Name = "\0",
+Thickness = 1,
+Color = FromRGB(41, 37, 45)
+}):AddToTheme({Color = "Border"})
+
+local CheckTick = Instances:Create("ImageLabel", {
+Parent = CheckBox.Instance,
+Name = "\0",
+ImageColor3 = FromRGB(232, 186, 248),
+BackgroundTransparency = 1,
+BorderSizePixel = 0,
+Size = UDim2New(1, -2, 1, -2),
+AnchorPoint = Vector2New(0.5, 0.5),
+Position = UDim2New(0.5, 0, 0.5, 0),
+Image = "rbxassetid://7072725342",
+ImageTransparency = 1,
+ZIndex = 4,
+BorderColor3 = FromRGB(0, 0, 0),
+BackgroundColor3 = FromRGB(0, 0, 0)
+})  CheckTick:AddToTheme({ImageColor3 = "Accent"})
+
+local OptionText = Instances:Create("TextLabel", {
+Parent = OptionButton.Instance,
+Name = "\0",
+FontFace = Library.Font,
+TextColor3 = FromRGB(255, 255, 255),
+TextTransparency = 0.4,
+Text = Option,
+BorderColor3 = FromRGB(0, 0, 0),
+Size = UDim2New(1, -30, 1, 0),
+Position = UDim2New(0, 26, 0, 0),
+BackgroundTransparency = 1,
+TextXAlignment = Enum.TextXAlignment.Left,
+BorderSizePixel = 0,
+ZIndex = 2,
+TextSize = 14,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})  OptionText:AddToTheme({TextColor3 = "Text"})
+
+local OptionData = {
+Selected = false,
+Name = Option,
+Text = OptionText,
+Button = OptionButton,
+CheckTick = CheckTick
+}
+
+function OptionData:Toggle(State)
+if State == "Active" then
+OptionData.Button:Tween(nil, {BackgroundTransparency = 0})
+OptionData.Text:Tween(nil, {TextTransparency = 0})
+OptionData.CheckTick:Tween(nil, {ImageTransparency = 0})
+else
+OptionData.Button:Tween(nil, {BackgroundTransparency = 1})
+OptionData.Text:Tween(nil, {TextTransparency = 0.4})
+OptionData.CheckTick:Tween(nil, {ImageTransparency = 1})
+end
+end
+
+function OptionData:Set()
+if Dropdown.Disabled then return end
+local Index = TableFind(Dropdown.Value, self.Name)
+if Index then
+TableRemove(Dropdown.Value, Index)
+self.Selected = false
+self:Toggle("Inactive")
+else
+TableInsert(Dropdown.Value, self.Name)
+self.Selected = true
+self:Toggle("Active")
+end
+Library.Flags[Dropdown.Flag] = Dropdown.Value
+local TextToDisplay = #Dropdown.Value == 0 and "--" or TableConcat(Dropdown.Value, ", ")
+Items["Value"].Instance.Text = TextToDisplay
+if Data.Callback then Library:SafeCall(Data.Callback, Dropdown.Value) end
+if Dropdown.OnChanged then Dropdown.OnChanged(Dropdown.Value) end
+end
+
+OptionButton:Connect("MouseButton1Down", function()
+OptionData:Set()
+end)
+
+self.Options[Option] = OptionData
+return OptionData
+end
+
+function Dropdown:Remove(Option)
+if self.Options[Option] then
+self.Options[Option].Button:Clean()
+self.Options[Option] = nil
+end
+end
+
+function Dropdown:Clear()
+for Index, Value in self.Options do
+self:Remove(Value.Name)
+end
+end
+
+function Dropdown:Refresh(List)
+Dropdown:Clear()
+for Index, Value in List do
+Dropdown:Add(Value)
+end
+end
+
+function Dropdown:SetDisabled(Bool)
+self.Disabled = Bool
+Items["Text"]:Tween(nil, {TextTransparency = Bool and 0.6 or 0})
+Items["RealDropdown"]:Tween(nil, {BackgroundTransparency = Bool and 0.6 or 0})
+if Bool then self:SetOpen(false) end
+end
+
+function Dropdown:SetVisible(Bool)
+Items["Dropdown"].Instance.Visible = Bool
+end
+
+local Debounce = false
+local RenderStepped
+
+function Dropdown:SetOpen(Bool)
+if Debounce then return end
+self.IsOpen = not not Bool
+Debounce = true
+local holder = Items["OptionHolder"].Instance
+local icon = Items["Icon"]
+local btn = Items["RealDropdown"] and Items["RealDropdown"].Instance
+if self.IsOpen then
+holder.Visible = true
+if icon and icon.Tween then icon:Tween(nil, {Rotation = -90}) end
+RenderStepped = RunService.RenderStepped:Connect(function()
+if holder and holder.Parent and btn then
+holder.Position = UDim2New(0, btn.AbsolutePosition.X, 0, btn.AbsolutePosition.Y + 30)
+end
+end)
+for _, v in pairs(Library.OpenFrames) do
+if v ~= self and v.Options and type(v.SetOpen) == "function" then
+pcall(v.SetOpen, v, false)
+end
+end
+Library.OpenFrames[self] = self
+else
+if icon and icon.Tween then icon:Tween(nil, {Rotation = 0}) end
+if Library.OpenFrames[self] then Library.OpenFrames[self] = nil end
+if RenderStepped then RenderStepped:Disconnect(); RenderStepped = nil end
+end
+local Descendants = holder:GetDescendants()
+table.insert(Descendants, holder)
+local NewTween
+for _, Object in ipairs(Descendants) do
+local TransparencyProperty = Tween:GetProperty(Object)
+if TransparencyProperty and not string.find(Object.ClassName, "UI") then
+Object.ZIndex = self.IsOpen and 1000 or 0
+if type(TransparencyProperty) == "table" then
+for _, Property in ipairs(TransparencyProperty) do
+NewTween = Tween:FadeItem(Object, Property, self.IsOpen, Data.Window.FadeSpeed)
+end
+else
+NewTween = Tween:FadeItem(Object, TransparencyProperty, self.IsOpen, Data.Window.FadeSpeed)
+end
+end
+end
+if NewTween and NewTween.Tween then
+Library:Connect(NewTween.Tween.Completed, function()
+Debounce = false
+if holder and holder.Parent then holder.Visible = self.IsOpen end
+end)
+else
+Debounce = false
+if holder and holder.Parent then holder.Visible = self.IsOpen end
+end
+end
+
+local SearchData = {Name = Data.Name, Item = Items["Dropdown"]}
+local PageSearchData = Library.SearchItems[Data.Page]
+if not PageSearchData then return end
+TableInsert(PageSearchData, SearchData)
+
+Items["RealDropdown"]:Connect("MouseButton1Down", function()
+if not Dropdown.Disabled then
+Dropdown:SetOpen(not Dropdown.IsOpen)
+end
+end)
+
+Library:Connect(UserInputService.InputBegan, function(Input)
+if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+if Library:IsMouseOverFrame(Items["OptionHolder"]) then return end
+if Debounce then return end
+Dropdown:SetOpen(false)
+end
+end)
+
+if Data.Disabled then Dropdown:SetDisabled(Data.Disabled) end
+for Index, Value in Data.Items do Dropdown:Add(Value) end
+if Data.Default then Dropdown:Set(Data.Default) end
+
+Library.SetFlags[Dropdown.Flag] = function(Value)
+Dropdown:Set(Value)
+end
+
+return Dropdown, Items
+end
+
+Components.SearchDropdown = function(Data)
+local Dropdown = {
+Value = nil,
+Flag = Data.Flag,
+IsOpen = false,
+Disabled = false,
+OnChanged = nil,
+Options = { }
+}
+
+local Items = { } do
+Items["Dropdown"] = Instances:Create("Frame", {
+Parent = Data.Parent.Instance,
+Name = "\0",
+BackgroundTransparency = 1,
+Size = UDim2New(1, 0, 0, 25),
+BorderColor3 = FromRGB(0, 0, 0),
+ZIndex = 2,
+BorderSizePixel = 0,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})
+
+Items["Text"] = Instances:Create("TextLabel", {
+Parent = Items["Dropdown"].Instance,
+Name = "\0",
+FontFace = Library.Font,
+TextColor3 = FromRGB(255, 255, 255),
+BorderColor3 = FromRGB(0, 0, 0),
+Text = Data.Name,
+AutomaticSize = Enum.AutomaticSize.X,
+AnchorPoint = Vector2New(0, 0.5),
+Size = UDim2New(0, 0, 0, 15),
+BackgroundTransparency = 1,
+Position = UDim2New(0, 0, 0.5, 0),
+BorderSizePixel = 0,
+ZIndex = 2,
+TextSize = 14,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})  Items["Text"]:AddToTheme({TextColor3 = "Text"})
+
+Items["RealDropdown"] = Instances:Create("TextButton", {
+Parent = Items["Dropdown"].Instance,
+Text = "",
+AutoButtonColor = false,
+Name = "\0",
+BorderColor3 = FromRGB(0, 0, 0),
+AnchorPoint = Vector2New(1, 0),
+Position = UDim2New(1, 0, 0, 0),
+Size = UDim2New(0, not IsMobile and 135 or 75, 0, 25),
+ZIndex = 2,
+BorderSizePixel = 0,
+BackgroundColor3 = FromRGB(36, 32, 39)
+})  Items["RealDropdown"]:AddToTheme({BackgroundColor3 = "Element"})
+
+Instances:Create("UICorner", {
+Parent = Items["RealDropdown"].Instance,
+Name = "\0",
+CornerRadius = UDimNew(0, 5)
+})
+
+Instances:Create("UIGradient", {
+Parent = Items["RealDropdown"].Instance,
+Name = "\0",
+Rotation = 90,
+Color = RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, FromRGB(216, 216, 216))}
+}):AddToTheme({Color = function()
+return RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, Library.Theme["Gradient"])}
+end})
+
+Items["Value"] = Instances:Create("TextLabel", {
+Parent = Items["RealDropdown"].Instance,
+Name = "\0",
+FontFace = Library.Font,
+TextColor3 = FromRGB(255, 255, 255),
+BorderColor3 = FromRGB(0, 0, 0),
+Text = "--",
+TextTruncate = Enum.TextTruncate.AtEnd,
+Size = UDim2New(1, -25, 0, 15),
+AnchorPoint = Vector2New(0, 0.5),
+Position = UDim2New(0, 8, 0.5, 0),
+BackgroundTransparency = 1,
+TextXAlignment = Enum.TextXAlignment.Left,
+BorderSizePixel = 0,
+ZIndex = 2,
+TextSize = 14,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})  Items["Value"]:AddToTheme({TextColor3 = "Text"})
+
+Items["Icon"] = Instances:Create("ImageLabel", {
+Parent = Items["RealDropdown"].Instance,
+Name = "\0",
+ImageColor3 = FromRGB(232, 186, 248),
+ScaleType = Enum.ScaleType.Fit,
+BorderColor3 = FromRGB(0, 0, 0),
+Size = UDim2New(0, 25, 0, 25),
+AnchorPoint = Vector2New(1, 0.5),
+Image = "rbxassetid://96215562143920",
+BackgroundTransparency = 1,
+Position = UDim2New(1, -1, 0.5, 0),
+ZIndex = 2,
+BorderSizePixel = 0,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})  Items["Icon"]:AddToTheme({ImageColor3 = "Accent"})
+
+Items["OptionHolder"] = Instances:Create("Frame", {
+Parent = Library.Holder.Instance,
+Name = "\0",
+Visible = false,
+ZIndex = 12,
+BorderSizePixel = 0,
+Size = UDim2New(0, 135, 0, 150),
+Position = UDim2New(0, Items["RealDropdown"].Instance.AbsolutePosition.X, 0, Items["RealDropdown"].Instance.AbsolutePosition.Y + 30),
+BackgroundColor3 = FromRGB(15, 12, 16),
+BorderColor3 = FromRGB(0, 0, 0)
+})  Items["OptionHolder"]:AddToTheme({BackgroundColor3 = "Background"})
+
+Instances:Create("UICorner", {
+Parent = Items["OptionHolder"].Instance,
+Name = "\0",
+CornerRadius = UDimNew(0, 5)
+})
+
+Instances:Create("UIStroke", {
+Parent = Items["OptionHolder"].Instance,
+Name = "\0",
+Thickness = 1,
+Color = FromRGB(41, 37, 45)
+}):AddToTheme({Color = "Border"})
+
+Instances:Create("UIListLayout", {
+Parent = Items["OptionHolder"].Instance,
+Name = "\0",
+Padding = UDimNew(0, 0),
+SortOrder = Enum.SortOrder.LayoutOrder
+})
+
+Items["SearchBox"] = Instances:Create("TextBox", {
+Parent = Items["OptionHolder"].Instance,
+Name = "\0",
+FontFace = Library.Font,
+PlaceholderColor3 = FromRGB(185, 185, 185),
+PlaceholderText = "Search...",
+TextSize = 12,
+Size = UDim2New(1, 0, 0, 26),
+TextColor3 = FromRGB(255, 255, 255),
+BorderColor3 = FromRGB(0, 0, 0),
+Text = "",
+BackgroundTransparency = 0,
+TextXAlignment = Enum.TextXAlignment.Left,
+ZIndex = 13,
+BorderSizePixel = 0,
+BackgroundColor3 = FromRGB(22, 20, 24)
+})  Items["SearchBox"]:AddToTheme({TextColor3 = "Text", PlaceholderColor3 = "Inactive Text", BackgroundColor3 = "Inline"})
+
+Instances:Create("UICorner", {
+Parent = Items["SearchBox"].Instance,
+Name = "\0",
+CornerRadius = UDimNew(0, 5)
+})
+
+Instances:Create("UIPadding", {
+Parent = Items["SearchBox"].Instance,
+Name = "\0",
+PaddingLeft = UDimNew(0, 8),
+PaddingRight = UDimNew(0, 8)
+})
+
+local SearchIconLabel = Instances:Create("ImageLabel", {
+Parent = Items["OptionHolder"].Instance,
+Name = "\0",
+ScaleType = Enum.ScaleType.Fit,
+ImageTransparency = 0.5,
+BorderColor3 = FromRGB(0, 0, 0),
+Size = UDim2New(0, 12, 0, 12),
+AnchorPoint = Vector2New(1, 0.5),
+Image = "rbxassetid://71924825350727",
+BackgroundTransparency = 1,
+Position = UDim2New(1, -8, 0, 13),
+ZIndex = 14,
+BorderSizePixel = 0,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})
+
+Items["OptionScroll"] = Instances:Create("ScrollingFrame", {
+Parent = Items["OptionHolder"].Instance,
+Name = "\0",
+Active = true,
+AutomaticCanvasSize = Enum.AutomaticSize.Y,
+ZIndex = 12,
+BorderSizePixel = 0,
+CanvasSize = UDim2New(0, 0, 0, 0),
+ScrollBarImageColor3 = FromRGB(232, 186, 248),
+MidImage = "rbxassetid://128693616966482",
+BorderColor3 = FromRGB(0, 0, 0),
+ScrollBarThickness = 1,
+TopImage = "rbxassetid://128693616966482",
+Size = UDim2New(1, 0, 1, -26),
+BottomImage = "rbxassetid://128693616966482",
+BackgroundColor3 = FromRGB(15, 12, 16),
+BackgroundTransparency = 1
+})  Items["OptionScroll"]:AddToTheme({ScrollBarImageColor3 = "Accent"})
+
+Instances:Create("UIPadding", {
+Parent = Items["OptionScroll"].Instance,
+Name = "\0",
+PaddingTop = UDimNew(0, 4),
+PaddingBottom = UDimNew(0, 4),
+PaddingRight = UDimNew(0, 5),
+PaddingLeft = UDimNew(0, 5)
+})
+
+Instances:Create("UIListLayout", {
+Parent = Items["OptionScroll"].Instance,
+Name = "\0",
+Padding = UDimNew(0, 4),
+SortOrder = Enum.SortOrder.LayoutOrder
+})
+end
+
+Library:Connect(Items["SearchBox"].Instance:GetPropertyChangedSignal("Text"), function()
+local Query = StringLower(Items["SearchBox"].Instance.Text)
+for _, OptionData in Dropdown.Options do
+if Query == "" or StringFind(StringLower(OptionData.Name), Query, 1, true) then
+OptionData.Button.Instance.Visible = true
+else
+OptionData.Button.Instance.Visible = false
+end
+end
+end)
+
+function Dropdown:Set(Option)
+for _, Value in self.Options do
+if Value.Name == Option then
+for _, v in self.Options do
+v.Selected = false
+v:Toggle("Inactive")
+end
+Value.Selected = true
+Value:Toggle("Active")
+self.Value = Option
+Library.Flags[self.Flag] = Option
+Items["Value"].Instance.Text = Option
+if Data.Callback then Library:SafeCall(Data.Callback, self.Value) end
+if self.OnChanged then self.OnChanged(self.Value) end
+return
+end
+end
+end
+
+function Dropdown:Get()
+return self.Value
+end
+
+function Dropdown:Add(Option)
+local OptionButton = Instances:Create("TextButton", {
+Parent = Items["OptionScroll"].Instance,
+Name = "\0",
+FontFace = Library.Font,
+TextColor3 = FromRGB(0, 0, 0),
+BorderColor3 = FromRGB(0, 0, 0),
+Text = "",
+AutoButtonColor = false,
+BackgroundTransparency = 1,
+BorderSizePixel = 0,
+Size = UDim2New(1, 0, 0, 25),
+ZIndex = 2,
+TextSize = 14,
+BackgroundColor3 = FromRGB(22, 20, 24)
+})  OptionButton:AddToTheme({BackgroundColor3 = "Inline"})
+
+Instances:Create("UICorner", {
+Parent = OptionButton.Instance,
+Name = "\0",
+CornerRadius = UDimNew(0, 5)
+})
+
+local OptionText = Instances:Create("TextLabel", {
+Parent = OptionButton.Instance,
+Name = "\0",
+FontFace = Library.Font,
+TextColor3 = FromRGB(255, 255, 255),
+TextTransparency = 0.4,
+Text = Option,
+BorderColor3 = FromRGB(0, 0, 0),
+Size = UDim2New(1, -10, 1, 0),
+Position = UDim2New(0, 8, 0, 0),
+BackgroundTransparency = 1,
+TextXAlignment = Enum.TextXAlignment.Left,
+BorderSizePixel = 0,
+ZIndex = 2,
+TextSize = 14,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})  OptionText:AddToTheme({TextColor3 = "Text"})
+
+local OptionData = {
+Selected = false,
+Name = Option,
+Text = OptionText,
+Button = OptionButton
+}
+
+function OptionData:Toggle(State)
+if State == "Active" then
+OptionData.Button:Tween(nil, {BackgroundTransparency = 0})
+OptionData.Text:Tween(nil, {TextTransparency = 0, Position = UDim2New(0, 10, 0, 0)})
+else
+OptionData.Button:Tween(nil, {BackgroundTransparency = 1})
+OptionData.Text:Tween(nil, {TextTransparency = 0.4, Position = UDim2New(0, 8, 0, 0)})
+end
+end
+
+function OptionData:Set()
+if Dropdown.Disabled then return end
+for _, v in Dropdown.Options do
+v.Selected = false
+v:Toggle("Inactive")
+end
+self.Selected = true
+self:Toggle("Active")
+Dropdown.Value = self.Name
+Library.Flags[Dropdown.Flag] = self.Name
+Items["Value"].Instance.Text = self.Name
+Items["SearchBox"].Instance.Text = ""
+if Data.Callback then Library:SafeCall(Data.Callback, Dropdown.Value) end
+if Dropdown.OnChanged then Dropdown.OnChanged(Dropdown.Value) end
+Dropdown:SetOpen(false)
+end
+
+OptionButton:Connect("MouseButton1Down", function()
+OptionData:Set()
+end)
+
+self.Options[Option] = OptionData
+return OptionData
+end
+
+function Dropdown:Remove(Option)
+if self.Options[Option] then
+self.Options[Option].Button:Clean()
+self.Options[Option] = nil
+end
+end
+
+function Dropdown:Clear()
+for Index, Value in self.Options do
+self:Remove(Value.Name)
+end
+end
+
+function Dropdown:Refresh(List)
+Dropdown:Clear()
+for Index, Value in List do
+Dropdown:Add(Value)
+end
+end
+
+function Dropdown:SetDisabled(Bool)
+self.Disabled = Bool
+if Bool then self:SetOpen(false) end
+end
+
+function Dropdown:SetVisible(Bool)
+Items["Dropdown"].Instance.Visible = Bool
+end
+
+local Debounce = false
+local RenderStepped
+
+function Dropdown:SetOpen(Bool)
+if Debounce then return end
+self.IsOpen = not not Bool
+Debounce = true
+local holder = Items["OptionHolder"].Instance
+local icon = Items["Icon"]
+local btn = Items["RealDropdown"] and Items["RealDropdown"].Instance
+if self.IsOpen then
+holder.Visible = true
+Items["SearchBox"].Instance.Text = ""
+if icon and icon.Tween then icon:Tween(nil, {Rotation = -90}) end
+RenderStepped = RunService.RenderStepped:Connect(function()
+if holder and holder.Parent and btn then
+holder.Position = UDim2New(0, btn.AbsolutePosition.X, 0, btn.AbsolutePosition.Y + 30)
+end
+end)
+for _, v in pairs(Library.OpenFrames) do
+if v ~= self and v.Options and type(v.SetOpen) == "function" then
+pcall(v.SetOpen, v, false)
+end
+end
+Library.OpenFrames[self] = self
+else
+if icon and icon.Tween then icon:Tween(nil, {Rotation = 0}) end
+if Library.OpenFrames[self] then Library.OpenFrames[self] = nil end
+if RenderStepped then RenderStepped:Disconnect(); RenderStepped = nil end
+end
+local Descendants = holder:GetDescendants()
+table.insert(Descendants, holder)
+local NewTween
+for _, Object in ipairs(Descendants) do
+local TransparencyProperty = Tween:GetProperty(Object)
+if TransparencyProperty and not string.find(Object.ClassName, "UI") then
+Object.ZIndex = self.IsOpen and 1000 or 0
+if type(TransparencyProperty) == "table" then
+for _, Property in ipairs(TransparencyProperty) do
+NewTween = Tween:FadeItem(Object, Property, self.IsOpen, Data.Window.FadeSpeed)
+end
+else
+NewTween = Tween:FadeItem(Object, TransparencyProperty, self.IsOpen, Data.Window.FadeSpeed)
+end
+end
+end
+if NewTween and NewTween.Tween then
+Library:Connect(NewTween.Tween.Completed, function()
+Debounce = false
+if holder and holder.Parent then holder.Visible = self.IsOpen end
+end)
+else
+Debounce = false
+if holder and holder.Parent then holder.Visible = self.IsOpen end
+end
+end
+
+local SearchData = {Name = Data.Name, Item = Items["Dropdown"]}
+local PageSearchData = Library.SearchItems[Data.Page]
+if not PageSearchData then return end
+TableInsert(PageSearchData, SearchData)
+
+Items["RealDropdown"]:Connect("MouseButton1Down", function()
+if not Dropdown.Disabled then
+Dropdown:SetOpen(not Dropdown.IsOpen)
+end
+end)
+
+Library:Connect(UserInputService.InputBegan, function(Input)
+if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+if Library:IsMouseOverFrame(Items["OptionHolder"]) then return end
+if Debounce then return end
+Dropdown:SetOpen(false)
+end
+end)
+
+if Data.Disabled then Dropdown:SetDisabled(Data.Disabled) end
+for Index, Value in Data.Items do Dropdown:Add(Value) end
+if Data.Default then Dropdown:Set(Data.Default) end
+
+Library.SetFlags[Dropdown.Flag] = function(Value)
+Dropdown:Set(Value)
+end
+
+return Dropdown, Items
+end
+
 		Components.ToggleDropdown = function(Data)
 			local Dropdown = {
 				Value = { },
@@ -4607,95 +5472,186 @@ local Library do
 		return KeybindList
 	end
 
-	Library.Watermark = function(self, Name)
-		local Watermark = { }
+Library.Watermark = function(self, Name, Options)
+Options = Options or {}
+local Position = Options.Position or "TopRight"
 
-		local Items = { } do
-			Items["Watermark"] = Instances:Create("Frame", {
-				Parent = Library.Holder.Instance,
-				Name = "\0",
-				BorderColor3 = FromRGB(0, 0, 0),
-				AnchorPoint = Vector2New(0.5, 0),
-				Position = UDim2New(0.5, 0, 0, 15),
-				Size = UDim2New(0, 100, 0, 60),
-				BorderSizePixel = 0,
-				AutomaticSize = Enum.AutomaticSize.XY,
-				BackgroundColor3 = FromRGB(16, 18, 21)
-			})  Items["Watermark"]:AddToTheme({BackgroundColor3 = "Background"})
+local Watermark = { }
 
-			Instances:Create("UIGradient", {
-				Parent = Items["Watermark"].Instance,
-				Name = "\0",
-				Rotation = 84,
-				Color = RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, FromRGB(211, 211, 211))}
-			}):AddToTheme({Color = function()
-				return RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, Library.Theme.Gradient)}
-			end})
+local AnchorX = Position == "TopRight" and 1 or 0
+local PosX    = Position == "TopRight" and 1 or 0
+local OffsetX = Position == "TopRight" and -15 or 15
 
-			Instances:Create("UICorner", {
-				Parent = Items["Watermark"].Instance,
-				Name = "\0",
-				CornerRadius = UDimNew(0, 5)
-			})
+local Items = { } do
+Items["Watermark"] = Instances:Create("Frame", {
+Parent = Library.Holder.Instance,
+Name = "\0",
+BorderColor3 = FromRGB(0, 0, 0),
+AnchorPoint = Vector2New(AnchorX, 0),
+Position = UDim2New(PosX, OffsetX, 0, 15),
+Size = UDim2New(0, 0, 0, 0),
+BorderSizePixel = 0,
+AutomaticSize = Enum.AutomaticSize.XY,
+BackgroundColor3 = FromRGB(15, 12, 16),
+ZIndex = 5,
+ClipsDescendants = false
+})  Items["Watermark"]:AddToTheme({BackgroundColor3 = "Background"})
 
-			Items["Text"] = Instances:Create("TextLabel", {
-				Parent = Items["Watermark"].Instance,
-				Name = "\0",
-				FontFace = Library.Font,
-				TextColor3 = FromRGB(255, 255, 255),
-				BorderColor3 = FromRGB(0, 0, 0),
-				Text = Name,
-				Size = UDim2New(0, 0, 0, 0),
-				AnchorPoint = Vector2New(0, 0.5),
-				Position = UDim2New(0, 0, 0.5, 0),
-				BackgroundTransparency = 1,
-				TextXAlignment = Enum.TextXAlignment.Center,
-				BorderSizePixel = 0,
-				AutomaticSize = Enum.AutomaticSize.XY,
-				TextSize = 14,
-				BackgroundColor3 = FromRGB(255, 255, 255)
-			})  Items["Text"]:AddToTheme({TextColor3 = "Text"})
+Instances:Create("UICorner", {
+Parent = Items["Watermark"].Instance,
+Name = "\0",
+CornerRadius = UDimNew(0, 6)
+})
 
-			Instances:Create("UIPadding", {
-				Parent = Items["Watermark"].Instance,
-				Name = "\0",
-				PaddingTop = UDimNew(0, 7),
-				PaddingBottom = UDimNew(0, 7),
-				PaddingRight = UDimNew(0, 7),
-				PaddingLeft = UDimNew(0, 7)
-			})
-		end
+Instances:Create("UIStroke", {
+Parent = Items["Watermark"].Instance,
+Name = "\0",
+Color = FromRGB(41, 37, 45),
+Thickness = 1,
+LineJoinMode = Enum.LineJoinMode.Miter
+}):AddToTheme({Color = "Border"})
 
-		function Watermark:SetVisible(Bool)
-			Items["Watermark"].Instance.Visible = Bool
-		end
+local AccentBar = Instances:Create("Frame", {
+Parent = Items["Watermark"].Instance,
+Name = "\0",
+BorderColor3 = FromRGB(0, 0, 0),
+BorderSizePixel = 0,
+Position = UDim2New(0, 0, 0, 0),
+Size = UDim2New(0, 3, 1, 0),
+ZIndex = 7,
+BackgroundColor3 = FromRGB(232, 186, 248)
+})
+AccentBar:AddToTheme({BackgroundColor3 = "Accent"})
 
-		local Frametimer = tick()
-		local Framecount = 0
+Instances:Create("UICorner", {
+Parent = AccentBar.Instance,
+Name = "\0",
+CornerRadius = UDimNew(0, 6)
+})
 
-		local FramesPerSecond = 60
+Instances:Create("UIGradient", {
+Parent = Items["Watermark"].Instance,
+Name = "\0",
+Rotation = 90,
+Color = RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, FromRGB(211, 211, 211))}
+}):AddToTheme({Color = function()
+return RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, Library.Theme.Gradient)}
+end})
 
-		Library:Connect(RunService.RenderStepped, function()
-			Framecount += 1
+local InnerLayout = Instances:Create("Frame", {
+Parent = Items["Watermark"].Instance,
+Name = "\0",
+BackgroundTransparency = 1,
+BorderSizePixel = 0,
+Position = UDim2New(0, 10, 0, 0),
+Size = UDim2New(1, -10, 1, 0),
+AutomaticSize = Enum.AutomaticSize.XY,
+ZIndex = 6,
+BorderColor3 = FromRGB(0, 0, 0),
+BackgroundColor3 = FromRGB(0, 0, 0)
+})
 
-			if tick() - Frametimer >= 1 then 
-				FramesPerSecond = Framecount
+Instances:Create("UIListLayout", {
+Parent = InnerLayout.Instance,
+Name = "\0",
+Padding = UDimNew(0, 1),
+SortOrder = Enum.SortOrder.LayoutOrder,
+FillDirection = Enum.FillDirection.Vertical
+})
 
-				Frametimer = tick()
-				Framecount = 0
-			end
+Instances:Create("UIPadding", {
+Parent = InnerLayout.Instance,
+Name = "\0",
+PaddingTop = UDimNew(0, 6),
+PaddingBottom = UDimNew(0, 6),
+PaddingRight = UDimNew(0, 10),
+PaddingLeft = UDimNew(0, 4)
+})
 
-			Items["Text"].Instance.Text = string.format("%s\nFPS: %s | PING: %s ms", Name, tostring(FramesPerSecond), tostring(MathFloor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())))
-		end)
+Items["XeioaLabel"] = Instances:Create("TextLabel", {
+Parent = InnerLayout.Instance,
+Name = "\0",
+FontFace = Library.Font,
+TextColor3 = FromRGB(232, 186, 248),
+BorderColor3 = FromRGB(0, 0, 0),
+Text = "Xeioa UI",
+Size = UDim2New(0, 0, 0, 0),
+BackgroundTransparency = 1,
+TextXAlignment = Enum.TextXAlignment.Left,
+BorderSizePixel = 0,
+AutomaticSize = Enum.AutomaticSize.XY,
+TextSize = 10,
+ZIndex = 6,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})  Items["XeioaLabel"]:AddToTheme({TextColor3 = "Accent"})
 
-		return Watermark
-	end
+Items["Text"] = Instances:Create("TextLabel", {
+Parent = InnerLayout.Instance,
+Name = "\0",
+FontFace = Library.Font,
+TextColor3 = FromRGB(255, 255, 255),
+BorderColor3 = FromRGB(0, 0, 0),
+Text = Name,
+Size = UDim2New(0, 0, 0, 0),
+BackgroundTransparency = 1,
+TextXAlignment = Enum.TextXAlignment.Left,
+BorderSizePixel = 0,
+AutomaticSize = Enum.AutomaticSize.XY,
+TextSize = 14,
+ZIndex = 6,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})  Items["Text"]:AddToTheme({TextColor3 = "Text"})
+
+Items["FpsLabel"] = Instances:Create("TextLabel", {
+Parent = InnerLayout.Instance,
+Name = "\0",
+FontFace = Library.Font,
+TextColor3 = FromRGB(185, 185, 185),
+BorderColor3 = FromRGB(0, 0, 0),
+Text = "FPS: -- | PING: -- ms",
+Size = UDim2New(0, 0, 0, 0),
+BackgroundTransparency = 1,
+TextXAlignment = Enum.TextXAlignment.Left,
+BorderSizePixel = 0,
+AutomaticSize = Enum.AutomaticSize.XY,
+TextSize = 11,
+ZIndex = 6,
+BackgroundColor3 = FromRGB(255, 255, 255)
+})  Items["FpsLabel"]:AddToTheme({TextColor3 = "Inactive Text"})
+end
+
+Items["Watermark"]:MakeDraggable()
+
+function Watermark:SetVisible(Bool)
+Items["Watermark"].Instance.Visible = Bool
+end
+
+function Watermark:SetText(NewText)
+Items["Text"].Instance.Text = NewText
+end
+
+local Frametimer = tick()
+local Framecount = 0
+local FramesPerSecond = 60
+
+Library:Connect(RunService.RenderStepped, function()
+Framecount += 1
+if tick() - Frametimer >= 1 then
+FramesPerSecond = Framecount
+Frametimer = tick()
+Framecount = 0
+end
+Items["FpsLabel"].Instance.Text = string.format("FPS: %s | PING: %s ms", tostring(FramesPerSecond), tostring(MathFloor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())))
+end)
+
+return Watermark
+end
 
 	Library.Window = function(self, Properties)
 		Properties = Properties or { }
 
 		local Window = {
-			Name = Properties.Name or Properties.name or "eclipse",
+			Name = Properties.Name or Properties.name or "xeioa",
 			Size = Properties.Size or Properties.size or (not IsMobile and UDim2New(0, 770, 0, 526) or UDim2New(0, 526, 0, 350)),
 			FadeSpeed = Properties.FadeSpeed or Properties.fadespeed or 0.25,
 			BackgroundIcon = Properties.BackgroundIcon or Properties.backgroundicon or "rbxassetid://",
@@ -4916,6 +5872,7 @@ local Library do
 				BackgroundColor3 = FromRGB(255, 255, 255)
 			})  Items["Input"]:AddToTheme({TextColor3 = "Text", PlaceholderColor3 = "Inactive Text"})
 
+if not IsMobile then
 			Items["Cursor"] = Instances:Create("Frame", {
 				Parent = Library.Holder.Instance,
 				Name = "\0",
@@ -4940,6 +5897,7 @@ local Library do
 				Rotation = -90,
 				BackgroundColor3 = FromRGB(232, 186, 248)
 			})  Items["Image"]:AddToTheme({ImageColor3 = "Accent"})
+end
 
 			if IsMobile then 
 				Items["FloatingButton"] = Instances:Create("TextButton", {
@@ -4990,7 +5948,7 @@ local Library do
 			Window.Items = Items
 		end
 
-		UserInputService.MouseIconEnabled = false
+if not IsMobile then UserInputService.MouseIconEnabled = false end
 
 		local Debounce = false
 
@@ -5065,14 +6023,14 @@ local Library do
 			if tostring(Input.KeyCode) == Library.MenuKeybind or tostring(Input.UserInputType) == Library.MenuKeybind then
 				Window.IsOpen = not Window.IsOpen
 				Items["Image"].Instance.Visible = Window.IsOpen
-				UserInputService.MouseIconEnabled = not Window.IsOpen
+if not IsMobile then UserInputService.MouseIconEnabled = not Window.IsOpen end
 				Items["MainFrame"].Instance.Visible = Window.IsOpen
 			end
 		end)
 
 		Library:Connect(RunService.RenderStepped, function()
 			local MouseLocation = UserInputService:GetMouseLocation() 
-			Items["Cursor"].Instance.Position = UDim2New(0, MouseLocation.X - 1, 0, MouseLocation.Y - 56)           
+if not IsMobile then Items["Cursor"].Instance.Position = UDim2New(0, MouseLocation.X - 1, 0, MouseLocation.Y - 56) end
 		end)
 
 		Items["MinimizeButton"]:Connect("MouseButton1Down", function()
@@ -6194,6 +7152,153 @@ local Library do
 
 		return Dropdown
 	end
+
+
+Library.Sections.MultiDropdown = function(self, Properties)
+Properties = Properties or { }
+
+local Dropdown = {
+Window = self.Window,
+Page = self.Page,
+Section = self,
+
+Name = Properties.Name or Properties.name or "Multi Dropdown",
+Flag = Properties.Flag or Properties.flag or Library:NextFlag(),
+Default = Properties.Default or Properties.default or nil,
+Items = Properties.Items or Properties.items or { },
+Callback = Properties.Callback or Properties.callback or function() end,
+OnChanged = Properties.OnChanged or Properties.onchanged or function() end,
+Disabled = Properties.Disabled or Properties.disabled or false,
+Tooltip = Properties.Tooltip or Properties.tooltip or nil
+}
+
+local NewDropdown, DropdownItems = Components.MultiDropdown({
+Name = Dropdown.Name,
+Parent = Dropdown.Section.Items["Content"],
+Flag = Dropdown.Flag,
+Items = Dropdown.Items,
+Default = Dropdown.Default,
+Callback = Dropdown.Callback,
+Page = Dropdown.Page,
+Window = Dropdown.Window,
+OnChanged = Dropdown.OnChanged,
+Disabled = Dropdown.Disabled
+})
+
+DropdownItems["Dropdown"]:Tooltip(Dropdown.Tooltip)
+
+function Dropdown:Set(Items)
+NewDropdown:Set(Items)
+end
+
+function Dropdown:OnChanged(Callback)
+NewDropdown.OnChanged = Callback
+Callback(NewDropdown.Value)
+end
+
+function Dropdown:Remove(Option)
+NewDropdown:Remove(Option)
+end
+
+function Dropdown:Add(Option)
+NewDropdown:Add(Option)
+end
+
+function Dropdown:Clear()
+NewDropdown:Clear()
+end
+
+function Dropdown:SetDisabled(Bool)
+NewDropdown:SetDisabled(Bool)
+end
+
+function Dropdown:SetVisible(Bool)
+NewDropdown:SetVisible(Bool)
+end
+
+function Dropdown:Refresh(List)
+NewDropdown:Refresh(List)
+end
+
+function Dropdown:Get()
+return NewDropdown:Get()
+end
+
+return Dropdown
+end
+
+Library.Sections.SearchDropdown = function(self, Properties)
+Properties = Properties or { }
+
+local Dropdown = {
+Window = self.Window,
+Page = self.Page,
+Section = self,
+
+Name = Properties.Name or Properties.name or "Search Dropdown",
+Flag = Properties.Flag or Properties.flag or Library:NextFlag(),
+Default = Properties.Default or Properties.default or nil,
+Items = Properties.Items or Properties.items or { },
+Callback = Properties.Callback or Properties.callback or function() end,
+OnChanged = Properties.OnChanged or Properties.onchanged or function() end,
+Disabled = Properties.Disabled or Properties.disabled or false,
+Tooltip = Properties.Tooltip or Properties.tooltip or nil
+}
+
+local NewDropdown, DropdownItems = Components.SearchDropdown({
+Name = Dropdown.Name,
+Parent = Dropdown.Section.Items["Content"],
+Flag = Dropdown.Flag,
+Items = Dropdown.Items,
+Default = Dropdown.Default,
+Callback = Dropdown.Callback,
+Page = Dropdown.Page,
+Window = Dropdown.Window,
+OnChanged = Dropdown.OnChanged,
+Disabled = Dropdown.Disabled
+})
+
+DropdownItems["Dropdown"]:Tooltip(Dropdown.Tooltip)
+
+function Dropdown:Set(Option)
+NewDropdown:Set(Option)
+end
+
+function Dropdown:OnChanged(Callback)
+NewDropdown.OnChanged = Callback
+Callback(NewDropdown.Value)
+end
+
+function Dropdown:Remove(Option)
+NewDropdown:Remove(Option)
+end
+
+function Dropdown:Add(Option)
+NewDropdown:Add(Option)
+end
+
+function Dropdown:Clear()
+NewDropdown:Clear()
+end
+
+function Dropdown:SetDisabled(Bool)
+NewDropdown:SetDisabled(Bool)
+end
+
+function Dropdown:SetVisible(Bool)
+NewDropdown:SetVisible(Bool)
+end
+
+function Dropdown:Refresh(List)
+NewDropdown:Refresh(List)
+end
+
+function Dropdown:Get()
+return NewDropdown:Get()
+end
+
+return Dropdown
+end
 
 	Library.Sections.ToggleDropdown = function(self, Properties)
 		Properties = Properties or { }
